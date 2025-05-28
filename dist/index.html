@@ -1,150 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
-    <title>Countdown Timer</title>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Countdown Timer</title>
+</head>
 
-  <body class="bg-gradient-to-br from-gray-800 to-black min-h-screen flex items-center justify-center">
-    <div class="bg-white/10 backdrop-blur-lg p-10 rounded-xl shadow-lg text-white w-full max-w-xl space-y-8 text-center">
-      <h1 class="text-4xl font-extrabold tracking-wide">Countdown Timer</h1>
+<body class="bg-gradient-to-br from-gray-800 to-black min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white/10 backdrop-blur-lg p-6 sm:p-10 rounded-xl shadow-lg text-white w-full max-w-xl space-y-8 text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-wide">Countdown Timer</h1>
 
-      <div class="flex justify-between items-end gap-5">
-        <div class="flex flex-col items-center">
-          <input id="days" type="number" value="0" min="0"
-            class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
-          <span class="mt-2 font-medium text-sm">Days</span>
-        </div>
-        <div class="flex flex-col items-center">
-          <input id="hours" type="number" value="0" min="0"
-            class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
-          <span class="mt-2 font-medium text-sm">Hours</span>
-        </div>
-        <div class="flex flex-col items-center">
-          <input id="minutes" type="number" value="0" min="0"
-            class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
-          <span class="mt-2 font-medium text-sm">Minutes</span>
-        </div>
-        <div class="flex flex-col items-center">
-          <input id="seconds" type="number" value="0" min="0"
-            class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
-          <span class="mt-2 font-medium text-sm">Seconds</span>
-        </div>
+    <div class="flex flex-wrap justify-center items-end gap-4">
+      <div class="flex flex-col items-center">
+        <input id="days" type="number" value="0" min="0"
+          class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
+        <span class="mt-2 font-medium text-sm">Days</span>
       </div>
-
-      <div class="text-4xl font-mono text-white tracking-widest" id="liveDisplay">00:00:00</div>
-
-      <div class="flex justify-center gap-4 mt-4">
-        <button id="startbtn" class="px-6 py-2 rounded-full bg-green-500 hover:bg-green-600 transition">Start</button>
-        <button id="pausebtn" class="px-6 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 transition">Pause</button>
-        <button id="stopbtn" class="px-6 py-2 rounded-full bg-red-500 hover:bg-red-600 transition">Stop</button>
-        <button id="resetbtn" class="px-6 py-2 rounded-full bg-gray-500 hover:bg-gray-600 transition">Reset</button>
+      <div class="flex flex-col items-center">
+        <input id="hours" type="number" value="0" min="0"
+          class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
+        <span class="mt-2 font-medium text-sm">Hours</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <input id="minutes" type="number" value="0" min="0"
+          class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
+        <span class="mt-2 font-medium text-sm">Minutes</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <input id="seconds" type="number" value="0" min="0"
+          class="w-20 h-20 text-3xl text-center bg-white/20 backdrop-blur rounded-full border-2 border-white/30 outline-none" />
+        <span class="mt-2 font-medium text-sm">Seconds</span>
       </div>
     </div>
 
-    <script>
-      let startButton = document.getElementById('startbtn');
-      let pauseButton = document.getElementById('pausebtn');
-      let stopButton = document.getElementById('stopbtn');
-      let resetButton = document.getElementById('resetbtn');
+    <div class="text-3xl sm:text-4xl font-mono text-white tracking-widest" id="liveDisplay">00:00:00</div>
+    <div id="finishMessage" class="text-green-400 text-lg font-semibold hidden">Countdown Complete!</div>
 
-      let interval;
-      let totalTime = 0;
-      let isPaused = false;
+    <div class="flex flex-wrap justify-center gap-3 mt-4">
+      <button id="startbtn" class="px-6 py-2 rounded-full bg-green-500 hover:bg-green-600 transition">Start</button>
+      <button id="pausebtn" class="px-6 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 transition">Pause</button>
+      <button id="stopbtn" class="px-6 py-2 rounded-full bg-red-500 hover:bg-red-600 transition">Stop</button>
+      <button id="resetbtn" class="px-6 py-2 rounded-full bg-gray-500 hover:bg-gray-600 transition">Reset</button>
+    </div>
+  </div>
 
-      function updateInputs(ms) {
-        let remainingSeconds = Math.floor(ms / 1000);
-        let d = Math.floor(remainingSeconds / (24 * 60 * 60));
-        let h = Math.floor((remainingSeconds % (24 * 60 * 60)) / (60 * 60));
-        let m = Math.floor((remainingSeconds % (60 * 60)) / 60);
-        let s = remainingSeconds % 60;
+  <script>
+    const startButton = document.getElementById('startbtn');
+    const pauseButton = document.getElementById('pausebtn');
+    const stopButton = document.getElementById('stopbtn');
+    const resetButton = document.getElementById('resetbtn');
+    const finishMessage = document.getElementById('finishMessage');
 
-        document.getElementById('days').value = d;
-        document.getElementById('hours').value = h;
-        document.getElementById('minutes').value = m;
-        document.getElementById('seconds').value = s;
+    let interval;
+    let totalTime = 0;
+    let isPaused = false;
 
-        const formatted =
-          String(h + d * 24).padStart(2, '0') + ':' +
-          String(m).padStart(2, '0') + ':' +
-          String(s).padStart(2, '0');
-        document.getElementById('liveDisplay').textContent = formatted;
-      }
+    function updateInputs(ms) {
+      let remainingSeconds = Math.floor(ms / 1000);
+      let d = Math.floor(remainingSeconds / (24 * 60 * 60));
+      let h = Math.floor((remainingSeconds % (24 * 60 * 60)) / (60 * 60));
+      let m = Math.floor((remainingSeconds % (60 * 60)) / 60);
+      let s = remainingSeconds % 60;
 
-      function startCountdown() {
-        interval = setInterval(() => {
-          if (totalTime <= 0) {
-            clearInterval(interval);
-            alert("Countdown finished!");
-            new Audio("https://www.soundjay.com/buttons/sounds/beep-07.mp3").play();
-            pauseButton.textContent = "Pause";
-            isPaused = false;
-            startButton.disabled = false;
-            return;
-          }
-          totalTime -= 1000;
-          updateInputs(totalTime);
-        }, 1000);
-      }
+      document.getElementById('days').value = d;
+      document.getElementById('hours').value = h;
+      document.getElementById('minutes').value = m;
+      document.getElementById('seconds').value = s;
 
-      startButton.addEventListener('click', () => {
-        if (interval) clearInterval(interval);
+      const formatted =
+        String(h + d * 24).padStart(2, '0') + ':' +
+        String(m).padStart(2, '0') + ':' +
+        String(s).padStart(2, '0');
+      document.getElementById('liveDisplay').textContent = formatted;
+    }
 
-        let d = parseInt(document.getElementById('days').value) || 0;
-        let h = parseInt(document.getElementById('hours').value) || 0;
-        let m = parseInt(document.getElementById('minutes').value) || 0;
-        let s = parseInt(document.getElementById('seconds').value) || 0;
-
-        totalTime = d * 24 * 60 * 60 * 1000 +
-          h * 60 * 60 * 1000 +
-          m * 60 * 1000 +
-          s * 1000;
-
-        isPaused = false;
-        pauseButton.textContent = "Pause";
-        startCountdown();
-        startButton.disabled = true;
-      });
-
-      pauseButton.addEventListener('click', () => {
-        if (!interval) return;
-
-        if (!isPaused) {
+    function startCountdown() {
+      interval = setInterval(() => {
+        if (totalTime <= 0) {
           clearInterval(interval);
-          pauseButton.textContent = "Play";
-          isPaused = true;
-          startButton.disabled = false;
-        } else {
-          startCountdown();
+          finishMessage.classList.remove('hidden');
           pauseButton.textContent = "Pause";
           isPaused = false;
-          startButton.disabled = true;
+          startButton.disabled = false;
+          return;
         }
-      });
+        totalTime -= 1000;
+        updateInputs(totalTime);
+      }, 1000);
+    }
 
-      stopButton.addEventListener('click', () => {
+    startButton.addEventListener('click', () => {
+      if (interval) clearInterval(interval);
+      finishMessage.classList.add('hidden');
+
+      let d = parseInt(document.getElementById('days').value) || 0;
+      let h = parseInt(document.getElementById('hours').value) || 0;
+      let m = parseInt(document.getElementById('minutes').value) || 0;
+      let s = parseInt(document.getElementById('seconds').value) || 0;
+
+      totalTime = d * 24 * 60 * 60 * 1000 +
+        h * 60 * 60 * 1000 +
+        m * 60 * 1000 +
+        s * 1000;
+
+      isPaused = false;
+      pauseButton.textContent = "Pause";
+      startCountdown();
+      startButton.disabled = true;
+    });
+
+    pauseButton.addEventListener('click', () => {
+      if (!interval) return;
+
+      if (!isPaused) {
         clearInterval(interval);
-        totalTime = 0;
-        updateInputs(0);
+        pauseButton.textContent = "Play";
+        isPaused = true;
+        startButton.disabled = false;
+      } else {
+        startCountdown();
         pauseButton.textContent = "Pause";
         isPaused = false;
-        startButton.disabled = false;
-      });
+        startButton.disabled = true;
+      }
+    });
 
-      resetButton.addEventListener('click', () => {
-        clearInterval(interval);
-        totalTime = 0;
-        document.getElementById('days').value = 0;
-        document.getElementById('hours').value = 0;
-        document.getElementById('minutes').value = 0;
-        document.getElementById('seconds').value = 0;
-        document.getElementById('liveDisplay').textContent = "00:00:00";
-        pauseButton.textContent = "Pause";
-        isPaused = false;
-        startButton.disabled = false;
-      });
-    </script>
-  </body>
+    stopButton.addEventListener('click', () => {
+      clearInterval(interval);
+      totalTime = 0;
+      updateInputs(0);
+      pauseButton.textContent = "Pause";
+      isPaused = false;
+      startButton.disabled = false;
+      finishMessage.classList.add('hidden');
+    });
+
+    resetButton.addEventListener('click', () => {
+      clearInterval(interval);
+      totalTime = 0;
+      document.getElementById('days').value = 0;
+      document.getElementById('hours').value = 0;
+      document.getElementById('minutes').value = 0;
+      document.getElementById('seconds').value = 0;
+      document.getElementById('liveDisplay').textContent = "00:00:00";
+      pauseButton.textContent = "Pause";
+      isPaused = false;
+      startButton.disabled = false;
+      finishMessage.classList.add('hidden');
+    });
+  </script>
+</body>
 </html>
